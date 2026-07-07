@@ -32,23 +32,23 @@ pipeline {
                 sh 'mvn package'
                 sh '''
                     # If WAR is expected
-                    cp target/*.war target/practice_ADH-${BUILD_NUMBER}.war
+                    cp target/*.war target/practice_adh-${BUILD_NUMBER}.war
                 '''
-                archiveArtifacts artifacts: 'target/practice_ADH-*.war', fingerprint: true
+                archiveArtifacts artifacts: 'target/practice_adh-*.war', fingerprint: true
                 echo 'Artifact Created Successfully!!'
             }
         }
 
         stage('Build & Tag Docker Image') {
             steps {
-                sh "docker build -t sagardocker/practice_ADH:latest -t practice_ADH:latest ."
+                sh "docker build -t sagardocker/practice_adh:latest -t practice_adh:latest ."
             }
         }
 
         stage('Docker Image Scanning') {
             steps {
                 echo 'Scanning Docker Image with Trivy...'
-                sh 'trivy image sagardocker/practice_ADH:latest || echo "Scan Failed - Proceeding with Caution"'
+                sh 'trivy image sagardocker/practice_adh:latest || echo "Scan Failed - Proceeding with Caution"'
                 echo 'Docker Image Scanning Completed!'
             }
         }
@@ -58,8 +58,8 @@ pipeline {
                 script {
                     withCredentials([usernamePassword(credentialsId: 'dockerhubCred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh 'docker login -u $DOCKER_USER -p $DOCKER_PASS'
-                        sh "docker tag practice_ADH:latest $DOCKER_USER/practice_ADH:latest"
-                        sh "docker push $DOCKER_USER/practice_ADH:latest"
+                        sh "docker tag practice_adh:latest $DOCKER_USER/practice_adh:latest"
+                        sh "docker push $DOCKER_USER/practice_adh:latest"
                     }
                 }
             }
@@ -73,8 +73,8 @@ pipeline {
                             aws ecr get-login-password --region ap-south-1 | \
                               docker login --username AWS --password-stdin 251335054837.dkr.ecr.ap-south-1.amazonaws.com
 
-                            docker tag practice_ADH:latest 251335054837.dkr.ecr.ap-south-1.amazonaws.com/sagardocker:practice_ADH-latest
-                            docker push 251335054837.dkr.ecr.ap-south-1.amazonaws.com/sagardocker:practice_ADH-latest
+                            docker tag practice_adh:latest 251335054837.dkr.ecr.ap-south-1.amazonaws.com/sagardocker:practice_adh-latest
+                            docker push 251335054837.dkr.ecr.ap-south-1.amazonaws.com/sagardocker:practice_adh-latest
                         '''
                         echo 'Docker Image Pushed to Amazon ECR Successfully!'
                     }
@@ -86,9 +86,9 @@ pipeline {
             steps {
                 echo 'Cleaning Up Local Docker Images...'
                 sh '''
-                docker rmi sagardocker/practice_ADH:latest || echo "Image not found or already deleted"
-                docker rmi practice_ADH:latest || echo "Image not found or already deleted"
-                docker rmi 251335054837.dkr.ecr.ap-south-1.amazonaws.com/sagardocker:practice_ADH-latest || echo "Image not found or already deleted"
+                docker rmi sagardocker/practice_adh:latest || echo "Image not found or already deleted"
+                docker rmi practice_adh:latest || echo "Image not found or already deleted"
+                docker rmi 251335054837.dkr.ecr.ap-south-1.amazonaws.com/sagardocker:practice_adh-latest || echo "Image not found or already deleted"
                 docker image prune -f
                 '''
                 echo 'Local Docker Images Cleaned Up Successfully!!'

@@ -8,16 +8,16 @@ LABEL maintainer="satyam.pandley@example.com"
 RUN rm -rf /usr/local/tomcat/webapps/ROOT
 
 # Create a user for running the application
-RUN useradd -m practice_ADH
+RUN useradd -m practice_adh
 
 # Copy your JAR file into the webapps directory
-COPY ./target/practice_ADH*.jar /usr/local/tomcat/webapps/
+COPY ./target/practice_adh*.jar /usr/local/tomcat/webapps/
 
 # Expose the default Tomcat port
 EXPOSE 8080
 
 # Set the user to 'Practice_ADH' for security
-USER practice_ADH
+USER practice_adh
 
 # Default command to run Tomcat
 CMD ["catalina.sh", "run"]
