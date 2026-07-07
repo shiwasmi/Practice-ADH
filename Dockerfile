@@ -11,7 +11,7 @@ RUN rm -rf /usr/local/tomcat/webapps/ROOT
 RUN useradd -m practice_adh
 
 # Copy your JAR file into the webapps directory
-COPY ./target/practice_adh*.jar /usr/local/tomcat/webapps/
+COPY ./target/practice_adh*.war /usr/local/tomcat/webapps/
 
 # Expose the default Tomcat port
 EXPOSE 8080
