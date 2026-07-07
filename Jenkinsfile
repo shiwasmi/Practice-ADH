@@ -82,6 +82,21 @@ pipeline {
             }
         }
 
+        stage('Upload Docker Image to Harbor') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'harbor-credentials', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        sh '''
+                    echo "$PASSWORD" | docker login 43.205.243.68:8082 -u "$USERNAME" --password-stdin
+                    docker tag practice_adh:latest 43.205.243.68:8082/practice_adh/practice_adh:latest
+                    docker push 43.205.243.68:8082/practice_adh/practice_adh:latest
+                    docker logout 43.205.243.68:8082
+                    '''
+                    }
+                }
+            }
+        }
+
         stage('Clean Up Local Docker Images') {
             steps {
                 echo 'Cleaning Up Local Docker Images...'
@@ -89,6 +104,7 @@ pipeline {
                 docker rmi sagardocker/practice_adh:latest || echo "Image not found or already deleted"
                 docker rmi practice_adh:latest || echo "Image not found or already deleted"
                 docker rmi 251335054837.dkr.ecr.ap-south-1.amazonaws.com/sagardocker:practice_adh-latest || echo "Image not found or already deleted"
+                docker rmi 43.205.243.68:8082/practice-docker-aws-harboor/practice-docker-aws-harboor:latest || echo "Image not found or already deleted"
                 docker image prune -f
                 '''
                 echo 'Local Docker Images Cleaned Up Successfully!!'
