@@ -7,7 +7,4 @@ public class hotel {
     public String getName() {
         return "Book your hotel as soon as possible";
     }
-    public String getName1() {
-        return "Book your hotel as soon as possible";
-    }
 }
